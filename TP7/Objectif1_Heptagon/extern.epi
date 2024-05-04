@@ -1,0 +1,2 @@
+fun print_f(input: int; out: int) returns ()
+fun print_g(input: int; out: int) returns ()

@@ -1,0 +1,12 @@
+open Function_f
+open Function_g
+node main(i : int) returns (o : int)
+var temp : int; v : bool; v_1 : int; v_2 : int;
+let
+  o = Function_f.f(v_2);
+  v_2 = if v then temp else v_1;
+  v_1 = pre 123;
+  v = true fby false;
+  temp = Function_g.g(i)
+tel
+

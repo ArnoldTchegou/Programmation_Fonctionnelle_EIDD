@@ -1,0 +1,15 @@
+open Complex_add
+node somme_vec<<n:int>>(a : Complex_add.complex^n; b : Complex_add.complex^n)
+returns (v_1 : Complex_add.complex^n)
+let
+  v_1 = (map (Complex_add.complex_add())<<n>>)(())(a, b)
+tel
+
+node somme_element_vec<<n:int>>(a : Complex_add.complex^n)
+returns (n_1 : Complex_add.complex)
+var x : Complex_add.complex;
+let
+  n_1 = (fold (Complex_add.complex_add())<<n>>)(())(a, x);
+  x = { Complex_add.re = 0.000000; Complex_add.im = 0.000000 }
+tel
+

@@ -1,0 +1,23 @@
+node myfun(x : int; y : int) returns (z : int; t : int)
+var x2 : int; v : int;
+let
+  z = (t + y);
+  t = (x2 + v);
+  v = (3 * x);
+  x2 = (x * x)
+tel
+
+node sum2(i : int) returns (o : int)
+var v : int;
+let
+  o = (i + v);
+  v = 0 fby i
+tel
+
+node counter returns (cnt : int)
+var v : int;
+let
+  cnt = 0 fby v;
+  v = (cnt + 1)
+tel
+

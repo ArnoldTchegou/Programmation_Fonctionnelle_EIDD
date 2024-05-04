@@ -1,0 +1,5 @@
+node f(i : int) returns (o : int)
+let
+  o = (i + 1)
+tel
+

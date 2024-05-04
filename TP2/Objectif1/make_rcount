@@ -1,0 +1,8 @@
+main : main.o reset.o reset_types.o
+	gcc -o main main.o reset.o reset_types.o
+main.o : main.c
+	gcc -o main.o -c main.c
+reset.o : reset_c/reset.c
+	gcc -o reset.o -c reset_c/reset.c
+reset_types.o : reset_c/reset_types.c
+	gcc -o reset_types.o -c reset_c/reset_types.c

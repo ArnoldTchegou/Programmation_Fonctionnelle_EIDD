@@ -1,0 +1,8 @@
+node rcounter(rst : bool) returns (cnt : int)
+var v : int; v_1 : int;
+let
+  cnt = if rst then 0 else v_1;
+  v_1 = 0 fby v;
+  v = (cnt + 1)
+tel
+

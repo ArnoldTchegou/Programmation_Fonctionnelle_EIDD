@@ -1,0 +1,15 @@
+fun myfun (x:int;y:int) returns (z:int;t:int)
+var x2 : int;
+let
+	x2 = x*x ;
+	t = x2 + 3*x ;
+	z= t + y ;
+tel
+node sum2(i:int) returns (o:int)
+let
+	o = i + (0 fby i) ;
+tel
+node counter () returns (cnt:int)
+let
+	cnt = 0 fby (cnt+1) ;
+tel

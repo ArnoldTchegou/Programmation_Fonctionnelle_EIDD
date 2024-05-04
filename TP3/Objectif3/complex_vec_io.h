@@ -1,0 +1,6 @@
+#include "complex_vec_io_types.h"
+void Complex_vec_io__read_complex_vector_step(Complex_vec_io__read_complex_vector_out* st);
+void Complex_vec_io__print_complex_vector_step(Complex_vectors__monvecteur v, Complex_vec_io__print_complex_vector_out* st);
+void Complex_vec_io__print_complex_step(Complex_add__complex v,Complex_vec_io__print_complex_out* st);
+
+

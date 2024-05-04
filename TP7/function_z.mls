@@ -1,0 +1,14 @@
+open Function_f
+open Function_g
+open Extern
+node z(i : int) returns (o : int)
+var temp : int; v : int; v_1 : int;
+let
+  () = Extern.print_f(v_1, o);
+  v_1 = 123 fby temp;
+  o = Function_f.f(v);
+  v = 123 fby temp;
+  () = Extern.print_g(i, temp);
+  temp = Function_g.g(i)
+tel
+

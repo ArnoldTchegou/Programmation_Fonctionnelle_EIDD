@@ -1,0 +1,3 @@
+fun printGNC(id:int; in1: int; out: int) returns ()
+fun printfast(id:int; in1: int; out: int) returns ()
+fun printthermal(id:int) returns ()

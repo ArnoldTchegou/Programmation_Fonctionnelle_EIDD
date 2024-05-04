@@ -1,0 +1,5 @@
+open Complex_add
+
+fun read_complex_vector() returns (o:complex^3)
+fun print_complex_vector(i:complex^3) returns ()
+fun print_complex(i:complex) returns ()

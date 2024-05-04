@@ -1,0 +1,12 @@
+type complex =
+{
+	re : float ;
+	im : float
+}
+fun complex_add(i1:complex;i2:complex) returns (o:complex)
+var x,y: float;
+let
+	x = i1.re +. i2.re;
+	y = i1.im +. i2.im ;
+	o = { re = x ; im = y};
+tel

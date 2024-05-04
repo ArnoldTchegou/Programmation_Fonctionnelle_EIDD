@@ -1,0 +1,24 @@
+tick	0x8000
+mtf	0xf0000
+
+partitions 3
+0 				0xf0000
+ports 0
+1 part1.elf	0x100000	0xf0000
+ports 2
+0 out1 1
+1 in1 0
+2 part2.elf	0x100000	0xf0000
+ports 2
+0 out1 0
+1 in1 1
+
+windows 3
+0	0x0	        0x10000	0 1
+1	0x10000	0x70000	1 1
+2	0x70000	0xf0000	2 1
+
+channels 2
+0 1 0 2 0 4
+1 2 1 1 1 4
+

@@ -1,0 +1,8 @@
+main : main.o first.o first_types.o
+	gcc -o main main.o first.o first_types.o
+main.o : main.c
+	gcc -o main.o -c main.c
+first.o : ../first_c/first.c
+	gcc -o first.o -c ../first_c/first.c
+first_types.o : ../first_c/first_types.c
+	gcc -o first_types.o -c ../first_c/first_types.c

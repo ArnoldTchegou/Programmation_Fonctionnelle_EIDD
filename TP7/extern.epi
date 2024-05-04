@@ -1,0 +1,2 @@
+fun print_f(i:int;o:int) returns()
+fun print_g(i:int;o:int) returns()

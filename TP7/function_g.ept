@@ -1,0 +1,4 @@
+node g(i:int) returns(o:int)
+let
+o=i+5;
+tel

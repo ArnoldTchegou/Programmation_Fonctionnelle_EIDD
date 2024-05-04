@@ -1,0 +1,19 @@
+open Extern
+
+fun f(y:int) returns (x:int)
+let
+	x = y + 1;
+	() = print_f(y, x);
+tel
+fun g(x: int) returns (y:int)
+let
+	y = x + 5;
+	() = print_g(x, y);
+tel
+
+node main() returns ()
+var t1, t2: int;
+let
+	t1 = f(123 fby t2);
+	t2 = g(t1);
+tel

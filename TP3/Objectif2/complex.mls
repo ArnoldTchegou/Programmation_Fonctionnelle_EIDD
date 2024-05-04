@@ -1,0 +1,29 @@
+type complex = { re: float; im: float }
+node complex_add(i1 : complex; i2 : complex) returns (o : complex)
+var y : float; x : float;
+let
+  o = { re = x; im = y };
+  y = (i1.im +. i2.im);
+  x = (i1.re +. i2.re)
+tel
+
+node complex_sub(i1 : complex; i2 : complex) returns (o : complex)
+var y : float; x : float;
+let
+  o = { re = x; im = y };
+  y = (i1.im -. i2.im);
+  x = (i1.re -. i2.re)
+tel
+
+node complex_mul(i1 : complex; i2 : complex) returns (o : complex)
+var y : float; x : float; v : float; v_1 : float; v_2 : float; v_3 : float;
+let
+  o = { re = x; im = y };
+  y = (v_2 +. v_3);
+  v_3 = (i1.im *. i2.re);
+  v_2 = (i1.re *. i2.im);
+  x = (v -. v_1);
+  v_1 = (i1.im *. i2.im);
+  v = (i1.re *. i2.re)
+tel
+

@@ -1,0 +1,16 @@
+open Complex_io
+open Complex
+node main returns 
+var c2 : Complex.complex; c1 : Complex.complex; v : Complex.complex;
+    v_1 : Complex.complex; v_2 : Complex.complex;
+let
+  () = Complex_io.print_complex(v_2);
+  v_2 = Complex.complex_mul(c1, c2);
+  () = Complex_io.print_complex(v_1);
+  v_1 = Complex.complex_sub(c1, c2);
+  () = Complex_io.print_complex(v);
+  v = Complex.complex_add(c1, c2);
+  c2 = Complex_io.read_complex();
+  c1 = Complex_io.read_complex()
+tel
+

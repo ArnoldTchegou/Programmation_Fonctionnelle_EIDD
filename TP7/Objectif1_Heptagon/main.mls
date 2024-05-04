@@ -1,0 +1,21 @@
+open Extern
+node f(y : int) returns (x : int)
+let
+  () = Extern.print_f(y, x);
+  x = (y + 1)
+tel
+
+node g(x : int) returns (y : int)
+let
+  () = Extern.print_g(x, y);
+  y = (x + 5)
+tel
+
+node main returns 
+var t2 : int; t1 : int; v : int;
+let
+  t2 = g(t1);
+  t1 = f(v);
+  v = 123 fby t2
+tel
+

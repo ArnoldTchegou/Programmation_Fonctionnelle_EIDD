@@ -1,0 +1,14 @@
+open Complex_vec
+open Complex_add
+open Complex_vec_io
+
+type monvecteur = complex^3
+fun main() returns ()
+var vect1, vect2: monvecteur;
+let
+	vect1 = read_complex_vector();
+	vect2 = read_complex_vector();
+	() = print_complex(somme_element_vec<<3>>(vect1));
+	() = print_complex(somme_element_vec<<3>>(vect2));
+	() = print_complex_vector(somme_vec<<3>>(vect1, vect2));
+tel

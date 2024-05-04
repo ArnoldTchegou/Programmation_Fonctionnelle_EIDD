@@ -1,0 +1,12 @@
+open Complex_io
+open Complex
+
+node main() returns ()
+var c1, c2: complex;
+let
+	c1 = read_complex();
+	c2 = read_complex();
+	() = print_complex(complex_add(c1,c2));
+	() = print_complex(complex_sub(c1,c2));
+	() = print_complex(complex_mul(c1,c2));
+tel

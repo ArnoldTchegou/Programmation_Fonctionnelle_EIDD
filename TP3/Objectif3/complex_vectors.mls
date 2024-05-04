@@ -1,0 +1,18 @@
+open Complex_vec
+open Complex_add
+open Complex_vec_io
+type monvecteur = Complex_add.complex^3
+node main returns 
+var vect2 : monvecteur; vect1 : monvecteur; v : Complex_add.complex;
+    v_1 : Complex_add.complex; v_2 : Complex_add.complex^3;
+let
+  () = Complex_vec_io.print_complex_vector(v_2);
+  v_2 = Complex_vec.somme_vec<<3>>(vect1, vect2);
+  () = Complex_vec_io.print_complex(v_1);
+  v_1 = Complex_vec.somme_element_vec<<3>>(vect2);
+  () = Complex_vec_io.print_complex(v);
+  v = Complex_vec.somme_element_vec<<3>>(vect1);
+  vect2 = Complex_vec_io.read_complex_vector();
+  vect1 = Complex_vec_io.read_complex_vector()
+tel
+

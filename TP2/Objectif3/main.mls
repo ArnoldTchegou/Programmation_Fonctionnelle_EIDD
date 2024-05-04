@@ -1,0 +1,30 @@
+open Extern
+const addr_hs = 8192
+const addr_fs = 12288
+const default_ignition = 0
+node fs_handler(fs : bool; id : int) returns 
+var x : int;
+let
+  () = Extern.act(x);
+  x = merge fs (true -> default_ignition)(false -> (id when false(fs)))
+tel
+
+node hs_handler(hs : bool) returns (id : int)
+var y : int; x : int; id2 : int; id1 : int;
+let
+  id = merge hs (true -> id1)(false -> id2);
+  x = Extern.f2(id2);
+  id2 = Extern.f1(y);
+  y = 15 fby x;
+  id1 = Extern.g()
+tel
+
+node main returns 
+var fs : bool; id : int; hs : bool;
+let
+  () = fs_handler(fs, id);
+  fs = Extern.read_bool(addr_fs);
+  id = hs_handler(hs);
+  hs = Extern.read_bool(addr_hs)
+tel
+

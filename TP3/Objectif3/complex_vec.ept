@@ -1,0 +1,13 @@
+open Complex_add
+
+fun somme_vec<<n: int>>(a:complex^n;b:complex^n) returns (v_1:complex^n)
+let
+	v_1 = map<<n>>complex_add(a,b);
+tel
+
+fun somme_element_vec<<n: int>>(a:complex^n) returns (n_1:complex)
+var x : complex;
+let
+	x = {re = 0.0; im = 0.0};
+	n_1 = fold<<n>>complex_add(a,x);
+tel

@@ -1,0 +1,65 @@
+open Extern
+node gnc(y : int) returns (x : int)
+var idx_GNC : int; v : int;
+let
+  () = Extern.printGNC(idx_GNC, y, x);
+  x = (y - idx_GNC);
+  idx_GNC = 0 fby v;
+  v = (idx_GNC + 1)
+tel
+
+node condact_gnc<<x_init:int>>(clk_gnc : bool; y : int) returns (x : int)
+var v : int; v_1 : int;
+let
+  x = merge clk_gnc (true -> v)(false -> (v_1 when false(clk_gnc)));
+  v_1 = x_init fby x;
+  v = gnc((y when true(clk_gnc)))
+tel
+
+node fast(x : int) returns (y : int)
+var idx_f : int; v : int; v_2 : int;
+let
+  () = Extern.printfast(idx_f, x, y);
+  y = (v_2 + idx_f);
+  v_2 = (2 * x);
+  idx_f = 0 fby v;
+  v = (idx_f + 1)
+tel
+
+node condact_f<<y_init:int>>(clk_f : bool; x : int) returns (y : int)
+var v : int; v_3 : int;
+let
+  y = merge clk_f (true -> v)(false -> (v_3 when false(clk_f)));
+  v_3 = y_init fby y;
+  v = fast((x when true(clk_f)))
+tel
+
+node condact_thermal returns 
+var idx_thermal : int; v : int;
+let
+  () = Extern.printthermal(idx_thermal);
+  idx_thermal = 0 fby v;
+  v = (idx_thermal + 1)
+tel
+
+node call_thermal(c : bool) returns 
+let
+  () = condact_thermal()
+tel
+
+node main returns 
+var clk_thermal : bool; clk_gnc : bool; clk_f : bool; y : int; x : int;
+    mif_cnt : int; v : int; v_4 : int; v_5 : int;
+let
+  x = condact_gnc<<99>>(clk_gnc, y);
+  () = call_thermal((true when true(clk_thermal)));
+  y = condact_f<<31>>(clk_f, v_5);
+  v_5 = 0 fby x;
+  clk_gnc = (mif_cnt = 9);
+  clk_thermal = (mif_cnt = 0);
+  clk_f = true;
+  mif_cnt = 0 fby v_4;
+  v_4 = (v % 10);
+  v = (mif_cnt + 1)
+tel
+

@@ -1,0 +1,11 @@
+open Function_f
+open Function_g
+open Extern
+node z(i:int) returns(o:int)
+var temp:int;
+let
+temp=g(i);
+()=print_g(i, temp);
+o=f(123 fby temp);
+()=print_f(123 fby temp, o);
+tel

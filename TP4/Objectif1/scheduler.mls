@@ -1,0 +1,164 @@
+open Scheduler_data
+open Externc
+const ntasks = 2
+const int_max = 1000000
+const tasks = [{ Scheduler_data.period = 
+                 5;
+                 Scheduler_data.capacity = 
+                 2;
+                 Scheduler_data.deadline = 
+                 5;
+                 Scheduler_data.first_start = 
+                 0 },
+                { Scheduler_data.period = 
+                  7;
+                  Scheduler_data.capacity = 
+                  2;
+                  Scheduler_data.deadline = 
+                  7;
+                  Scheduler_data.first_start = 
+                  3 }]
+const init_sstate = { Scheduler_data.current_date = 
+                      ~-(1);
+                      Scheduler_data.tasks = 
+                      { Scheduler_data.status = 
+                        Scheduler_data.Waiting;
+                        Scheduler_data.current_deadline = 
+                        0;
+                        Scheduler_data.left = 
+                        0 }^2 }
+node update_selected(ts : Scheduler_data.task_status; selected : int;
+                      tid : int)
+returns (tso : Scheduler_data.task_status)
+var v : bool; v_1 : Scheduler_data.task_status;
+let
+  tso = if v then v_1 else ts;
+  v_1 = {ts with .Scheduler_data.status = Scheduler_data.Running};
+  v = (tid = selected)
+tel
+
+node select_aux(ts : Scheduler_data.task_status;
+                 ta : Scheduler_data.task_attributes; tid : int;
+                 acc : Scheduler_data.select_acc)
+returns (acc_o : Scheduler_data.select_acc)
+var v : bool; v_2 : bool; v_3 : bool; v_4 : Scheduler_data.select_acc;
+let
+  acc_o = if v_3 then v_4 else acc;
+  v_4 =
+    { Scheduler_data.tid = 
+      tid;
+      Scheduler_data.speriod = 
+      ta.Scheduler_data.period };
+  v_3 = (v & v_2);
+  v_2 = (ta.Scheduler_data.period < acc.Scheduler_data.speriod);
+  v = (ts.Scheduler_data.status = Scheduler_data.Ready)
+tel
+
+node select_one_task(ts : Scheduler_data.task_status^ntasks)
+returns (selected : int)
+var tmp : Scheduler_data.select_acc; v : Scheduler_data.select_acc;
+let
+  selected = tmp.Scheduler_data.tid;
+  tmp = (foldi (select_aux())<<ntasks>>)(())(ts, tasks, v);
+  v = { Scheduler_data.tid = ntasks; Scheduler_data.speriod = int_max }
+tel
+
+node rate_monotonic(ts : Scheduler_data.task_status^ntasks)
+returns (tso : Scheduler_data.task_status^ntasks)
+var selected : int; v : int^ntasks;
+let
+  tso = (mapi (update_selected())<<ntasks>>)(())(ts, v);
+  v = selected^ntasks;
+  selected = select_one_task(ts)
+tel
+
+node start_inst(current_date : int; tsi : Scheduler_data.task_status;
+                 ta : Scheduler_data.task_attributes)
+returns (tso : Scheduler_data.task_status)
+var c : bool; v : int; v_5 : int; v_6 : int; v_7 : int;
+    v_8 : Scheduler_data.task_status;
+let
+  tso = merge c (true -> v_8)(false -> (tsi when false(c)));
+  v_8 =
+    { Scheduler_data.status = 
+      Scheduler_data.Ready;
+      Scheduler_data.current_deadline = 
+      v_6;
+      Scheduler_data.left = 
+      v_7 };
+  v_7 = Externc.random((ta.Scheduler_data.capacity when true(c)));
+  v_6 =
+    ((current_date when true(c)) + (ta.Scheduler_data.deadline when true(c)));
+  c = (v_5 = 0);
+  v_5 = (v % ta.Scheduler_data.period);
+  v = (current_date - ta.Scheduler_data.first_start)
+tel
+
+node check_deadline(current_date : int; tsi : Scheduler_data.task_status;
+                     tid : int)
+returns (tso : Scheduler_data.task_status)
+var c : bool; v : bool; v_9 : bool; v_10 : Scheduler_data.task_status;
+let
+  tso = if c then v_10 else tsi;
+  v_10 = {tsi with .Scheduler_data.status = Scheduler_data.Waiting};
+  () =
+    Externc.deadline_miss_log
+    ((current_date when true(c)), (tid when true(c)));
+  c = (v & v_9);
+  v_9 = (tsi.Scheduler_data.current_deadline = current_date);
+  v = (tsi.Scheduler_data.status = Scheduler_data.Ready)
+tel
+
+node simulate(tsi : Scheduler_data.task_status)
+returns (o : Scheduler_data.task_status)
+var v : bool; v_11 : bool; v_12 : Scheduler_data.task_status; v_13 : int;
+    v_14 : Scheduler_data.task_status; v_15 : Scheduler_data.task_status;
+let
+  o = if v then v_15 else tsi;
+  v_15 = if v_11 then v_12 else v_14;
+  v_14 =
+    { Scheduler_data.status = 
+      Scheduler_data.Ready;
+      Scheduler_data.current_deadline = 
+      tsi.Scheduler_data.current_deadline;
+      Scheduler_data.left = 
+      v_13 };
+  v_13 = (tsi.Scheduler_data.left - 1);
+  v_12 =
+    { Scheduler_data.status = 
+      Scheduler_data.Waiting;
+      Scheduler_data.current_deadline = 
+      tsi.Scheduler_data.current_deadline;
+      Scheduler_data.left = 
+      0 };
+  v_11 = (tsi.Scheduler_data.left <= 1);
+  v = (tsi.Scheduler_data.status = Scheduler_data.Running)
+tel
+
+node scheduler(si : Scheduler_data.scheduler_state)
+returns (so : Scheduler_data.scheduler_state)
+var fin : Scheduler_data.task_status^ntasks;
+    tmp3 : Scheduler_data.task_status^ntasks;
+    tmp2 : Scheduler_data.task_status^ntasks;
+    tmp1 : Scheduler_data.task_status^ntasks; new_date : int; v : int^ntasks;
+    v_16 : int^ntasks;
+let
+  so = { Scheduler_data.current_date = new_date; Scheduler_data.tasks = fin };
+  fin = rate_monotonic(tmp3);
+  tmp3 = (map (start_inst())<<ntasks>>)(())(v_16, tmp2, tasks);
+  v_16 = new_date^ntasks;
+  tmp2 = (mapi (check_deadline())<<ntasks>>)(())(v, tmp1);
+  v = new_date^ntasks;
+  tmp1 = (map (simulate())<<ntasks>>)(())(si.Scheduler_data.tasks);
+  new_date = (si.Scheduler_data.current_date + 1)
+tel
+
+node main returns 
+var new_sstate : Scheduler_data.scheduler_state;
+    sstate : Scheduler_data.scheduler_state;
+let
+  () = Externc.print_scheduler_state(new_sstate);
+  sstate = init_sstate fby new_sstate;
+  new_sstate = scheduler(sstate)
+tel
+
