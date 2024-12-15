@@ -1,0 +1,37 @@
+type vec2 = int^2
+type mat4 = vec2^2
+
+fun vv(x, y : vec2) returns (o : int)
+let
+    o = x[0]*y[0] + x[1]*y[1];
+tel
+
+fun line(x : mat4; i : int) returns (l : vec2)
+let
+    l = x[>i<];
+tel
+
+fun column(x : mat4; j : int) returns (c : vec2)
+let
+    c = [(x[0])[>j<], (x[1])[>j<]];
+tel
+
+fun mm(x, y : mat4) returns (z : mat4)
+let
+    z = [[vv(line(x,0),column(y,0)), vv(line(x,0),column(y,1))], [vv(line(x,1),column(y,0)), vv(line(x,1),column(y,1))]]
+tel
+
+node suite() returns (m :mat4; u : int)
+let
+    m = [[1, 0],[0, 1]] fby mm([[0, 1],[1, 1]], m);
+    u = vv(line(m, 0), [1, 1]);
+tel
+
+node main() returns (c :vec2; prod : mat4)
+var matrice1, matrice2 : mat4;
+let
+    matrice1 = [[1, 0], [2, 3]];
+    matrice2 = [[4, 1], [5, 3]];
+    c = column(matrice1, 1);
+    prod = mm(matrice1, matrice2);
+tel

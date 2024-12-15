@@ -1,0 +1,280 @@
+node f() returns (x, y : int; z : bool)
+let
+  x = 1;
+  y = 42;
+  z = false;
+tel
+
+node h(k : int) returns (o : int)
+  var x, y : int; z : bool;
+let
+  (x, y, z) = f();
+  o = k + if z then 2 * x else y;
+tel
+
+node half_bool() returns (o : bool)
+let
+  o = true fby not o;
+tel
+
+node nat_numbers() returns(nat, pos : int)
+let
+  nat = 0 fby pos;
+  pos = nat + 1;
+tel
+
+node somme(x: int) returns (o: int)
+let
+    o = x + 0 fby o;
+tel
+
+node alarme_borne(x, lo, hi : float) returns(alarm : bool)
+let
+  alarm = x <. lo or x >. hi;
+tel
+
+node vitesse_temp(x : float) returns(y : float)
+let
+y = 0.0 -> (x -. pre x);
+tel
+
+node alarme_vit(x : float) returns(alarm : bool)
+let
+alarm = vitesse_temp(x) <. -.2.0 or vitesse_temp(x) >. 2.0;
+tel
+
+node jafter(x : bool) returns (y : bool)
+let
+  y = false -> pre x;
+tel
+
+node min_flot(x : int) returns (y : int)
+let
+  y = x -> (if x<pre(y) then x else pre(y));
+tel
+
+(*node compteur_evt(e : bool) returns (c : int)
+let
+  z = if e then (1 -> pre c + 1) else 0;
+tel*)
+
+
+fun my_xor(x, y : bool) returns (o : bool)
+let
+  o = (x and not y) or (not x and y)
+tel
+
+node hadd(x, y : bool) returns (cout, s : bool)
+let
+  s = my_xor(x,y);
+  cout = x and y;
+tel
+
+node fadd(cin, x, y: bool) returns (cout, s :bool);
+var s1, c1, c2 : bool;
+let
+  (c1, s1) = hadd(x, y);
+  (c2, s) = hadd(s1, cin);
+  cout = c1 or c2;
+tel
+
+node sadd(x, y : bool) returns (s : bool)
+var c : bool;
+let
+  (s , c) = fadd(x, y, false fby c);
+tel
+
+
+node alarme_vit_val(x : float) returns ( vitesse : float; count : int; alarm : bool)
+var test : bool; 
+let
+  vitesse = vitesse_temp(x);
+  test =  (vitesse>=. 2.0 or vitesse <=. -.2.0);
+  reset count = 0 fby (count + 1) every not test;
+  alarm = false fby if (test and count>3 and (x >=. 35.0 or x <=. -.10.0)) then true else false;
+tel
+
+node compteur_evt(e : bool) returns(c : int)
+let
+  reset c = somme(if e then 1 else 0) every not e;
+tel
+
+node detect_intrusion(mvt: bool; onoff: bool; hs : bool) returns (alarme : bool)
+var count : int; active : bool;
+let
+  reset count = (0 fby count) + if hs then 10 else 0 every (not mvt and active);
+  alarme = ((count > 50) or (false fby alarme)) and active;
+  active = false fby (if onoff then not active else active);
+  (* onoff <> active *)
+tel
+
+node detecteur_automate(mvt, hs, onoff : bool) returns (alarme:bool)
+let
+  automaton
+    state Detecteur_inactive
+      do alarme = false;
+    unless onoff then Detecteur_active
+    state Detecteur_active  
+      var count : int;
+      do count = (0 fby count) + (if hs then 10 else 0);
+      alarme = false;
+    until count >= 50 then Alarm_Active
+    unless not mvt then Detecteur_active 
+    state Alarm_Active
+      do alarme = true;
+    until onoff then Detecteur_inactive
+  end
+tel
+
+node chronometre(start_stop, rst, hs : bool) returns (last time : int = 0)
+let
+  automaton
+    state Stop
+      do time = if rst then 0 else last time
+    unless start_stop then Running
+    state Running
+      do time = if rst then 0 else ((0 fby time) + (if hs then 10 else 0)) 
+    unless start_stop then Stop
+  end
+tel
+
+node chrono3(start_stop, rst, pause : bool) returns(last display_time : int =0)
+var internal_time : int; hs :bool;
+let
+  hs = true;
+  internal_time = chronometre(start_stop, rst, hs);
+  automaton
+    state Non_gele
+      do display_time = internal_time unless pause then Gele
+    state Gele
+      do unless pause then Non_gele
+  end
+tel
+
+node chrono2bis(start_stop, rst, pause : bool) returns(last display_time : int =0)
+var last internal_time : int = 0;
+let
+  automaton
+    state Stop
+      do internal_time = if rst then 0 else last display_time;
+      display_time = internal_time;
+      unless start_stop then Running
+    state Running
+      do automaton
+        state Non_gele
+          do internal_time = last internal_time + if rst then 10 else 0;
+          display_time = internal_time;
+        state Gele
+          do internal_time = last internal_time + if rst then 10 else 0;
+          unless rst then Non_gele
+      end
+      unless start_stop then Stop
+    end
+tel
+
+
+node ring_buffer<<n : int>>(e : int; w, r : bool) returns (o : int)
+var r_idx, w_idx : int; pa, a : int^n;
+let
+  o = a.[r_idx] default 0;
+  pa = (0^n) fby a;
+  a = if w then [ pa with [w_idx] = e ] else pa;
+  r_idx = 0 fby (((if r then 1 else 0) + r_idx) % n);
+  w_idx = 0 fby (((if w then 1 else 0) + w_idx) % n);
+tel
+
+node ring_buffer_checked<<n : int>>(e : int; w, r : bool) returns (o : int; of, uf : bool)
+var r_idx, w_idx, read_idx, write_idx : int; pa, a : int^n;
+let
+  o = a.[r_idx] default 0;
+  pa = (0^n) fby a;
+  a = if w then [ pa with [w_idx] = e ] else pa;
+  r_idx = 0 fby (((if r then 1 else 0) + r_idx) % n);
+  w_idx = 0 fby (((if w then 1 else 0) + w_idx) % n);
+  read_idx = 0 fby ((if w then 1 else 0) + w_idx);
+  write_idx = 0 fby ((if w then 1 else 0) + w_idx);
+  uf = read_idx>write_idx;
+  of = (read_idx - write_idx) > n;
+tel
+
+node watch(hs : bool) returns (hms : int^3)
+var h, m, s : int;
+let
+
+  h = (0 fby h + (if (m=0 and s=0 and hs) then 1 else 0))%24;
+  m = (0 fby m + (if (s=0 and hs) then 10 else 0))%60;
+  s = (0 fby s + (if hs then 10 else 0))%60;
+
+  hms = [h, m, s];
+
+tel
+
+
+(*node reglage(hms: int^3; start_stop, rst, pause : bool) returns (hms_new : int^3)
+var hh, mm, ss: int;
+let
+  hms_new = if rst then [0, 0, 0] else [hh, mm, ss];
+  ss = hms[2];
+  automaton
+    state Reg_h
+      hh = hms[0] fby if start_stop then (hh + 1)%24 else hh;
+      until pause then Reg_min
+    state Reg_min
+      mm = hms[1] fby if start_stop then (mm +1)%60 else mm;
+      until pause then Reg_h
+    end
+tel*)
+
+
+(*node montre(hs, start_stop, rst, pause: bool) returns (hh, mm, ss : int)
+last hms : int^3 = [0, 0, 0];
+let
+  automaton
+    state Heure
+      hms = watch(hs);
+      hh,mm,ss = afficher(hms);
+tel*)
+
+
+node affiche_montre (hms : int^3) returns (hh, mm, ss : int)
+let
+  (hh, mm, ss) = (hms[0], hms[1], hms[2]);
+tel
+
+
+node chrono(start_stop, rst, pause: bool) returns (hms : int^3)
+var time : int;
+let
+  time = chrono3(start_stop, rst, pause);
+  hms = [time/3600, time/60, time%60];
+tel
+
+fun sum (a , acc :int) returns (o, new_acc : int)
+let
+  o = a + acc;
+  new_acc = o
+tel
+
+node sum_cumul<<n :int>>(x : int^n) returns (s : int^n)
+var y : int;
+let
+  (*(s, y) = mapfold<<n>>sum(x, 0);*)
+  (s, y) = mapfold<<n>>sum(x, 0 fby y);
+tel
+
+node c0() returns(nat: int)
+let
+  nat = 0 fby (nat + 1);
+tel
+
+node c3(c : bool) returns (o, a, b : int)
+let
+  a = c0();
+  b = c0() whenot c;
+  o = merge c a b;
+tel
+
+node main(e : int; w, r : bool) returns (o : int; of, uf : bool)
+let
+  (o ,of, uf) = ring_buffer_checked<<3>>(e,w, r);
+tel

@@ -1,0 +1,7 @@
+node somme(x : int) returns (o : int)
+var v : int;
+let
+  o = (x + v);
+  v = 0 fby o
+tel
+

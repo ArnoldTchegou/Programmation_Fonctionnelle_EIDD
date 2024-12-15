@@ -1,0 +1,37 @@
+fun shift_accumulate(acc : int; elt : int) returns (new_acc : int; new_elt : int)
+let
+  new_elt = acc;         
+  new_acc = elt;         
+tel
+
+fun shiftr<<n : int>>(first : int; x : int^n) returns (i : int; o : int^n)
+let
+  (o, i) = mapfold<<n>>shift_accumulate(x, first);
+tel
+
+node window<<n : int>>(ini : int; x : int) returns (i : int; o : int^n)
+var vect : int^n;
+let
+  vect = ini^n;
+  (i ,o) = shiftr<<n>>(x, vect fby o);
+tel
+
+fun sum(a, b :int) returns (o : int)
+let
+  o = a + b;
+tel
+
+node average<<n : int>>(x : int) returns(o : int; vect : int^n)
+var i, acc: int;
+let
+  i = 1 fby (i + 1);
+  (acc, vect) = window<<n>>(0, x);
+  o = if i<n then 0 else (fold<<n>>sum(vect, 0)/n);
+tel
+
+node main(x : int) returns (o : int; vect : int^5) 
+let
+    (*(i, o) = shiftr<<6>>(99, [5, 6, 7, 8, 9, 20]);*)
+    (*(i, o) = window<<4>>(1, x);*)
+    (o, vect) = average<<5>>(x);
+tel

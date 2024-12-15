@@ -1,0 +1,132 @@
+(* type énumérés pour les lettres de l'alphabet d'entrée *)
+
+type alpha = A|B|C
+
+(* type énumérés pour les lettres de l'automate *)
+
+type astate = X|Y|Z|Dead
+
+node automate1(l : alpha) returns (accept : bool)
+var s, sprev : astate; 
+let
+    sprev = X fby s;
+    s = if (sprev, l) = (X, A) then Y
+        else if (sprev, l) = (Y, B) then Y
+        else if (sprev, l) = (Y, C) then Z
+        else if (sprev, l) = (Z, A) then Y
+        else Dead;
+    accept = (s=Z);
+tel
+
+node flot_asynchrone() returns (o : int)
+var n : int;
+let
+    n = 0 fby (n + 1);
+    o = if (n%2 =  0) then n else 0;
+tel
+
+node nat() returns (o : int)
+let
+    o = 0 fby (o + 1);
+tel
+
+node c3(x :bool) returns (o : int)
+var a, b : int;
+let
+    a = nat();
+    b = nat();
+    o = merge x a (b whenot x);
+tel
+
+node retard(y : int) returns(o : int)
+var cpt, o1 : int; c : bool;
+let
+    cpt = nat();
+    c = true fby not c;
+    o1 = cpt/2 when c;
+    o = merge c o1 (y when false(c));
+tel
+
+node itgr(x, h : float; c : bool) returns (o : float)
+var o1, o2 : float; ini : float;
+let
+    ini = 0.0;
+    o1 = (ini fby o) +. h *. x;
+    o2 = ini fby o;
+    o = merge c (o1 when c) (o2 when false(c));
+tel
+
+node a3() returns (o : bool)
+let
+    automaton
+        state A
+            do o = false
+            until not o then B
+        state B
+            do o = true
+    end
+tel
+
+node f2() returns (o : int)
+let
+    automaton
+        state A
+            do o = 0 fby (o + 1)
+            until o >= 3 then B
+        state B
+            do o = 42
+            until true continue A
+    end
+tel
+
+node f3() returns (o : int)
+let
+    automaton
+        state A
+            do o = 0 fby (o + 1)
+            until o >= 3 continue A
+        end
+tel
+
+
+fun add_subtract(x, y : int) returns (a , b : int)
+let
+    (a, b) = (x+y, x-y);
+tel
+
+fun array_add_sub<<n : int>>(x, y: int^n) returns (a , b : int^n)
+let
+    (a, b) = map<<n>>add_subtract(x, y);
+tel
+
+fun sum(x, y, ini : int) returns (o : int)
+let
+    o = x + y + ini;
+tel
+
+fun sum_add_subtract(x, y, ini : int) returns (o, a : int)
+let
+    (a , o) = (x + y, x + y + ini);
+tel
+
+node sum_array<<n : int>>(x, y: int^n) returns (o : int)
+var acc : int;
+let
+    o = fold<<n>>sum(x, y, acc);
+    acc = 0 fby o;
+tel
+
+node sum_add_subtract_array<<n : int>>(x, y: int^n) returns (o : int; a  : int^n)
+let
+    (a, o) = mapfold<<n>>sum_add_subtract(x, y, 0 fby o);
+tel
+
+node main() returns (o : int; a  : int^4)
+var x, y : int^4;
+let
+    x = [1, 2, 3, 4];
+    y = [5, 6, 7, 8];
+    (*(a, b) = array_add_sub<<4>>(x, y);*)
+    (*o = sum_array<<4>>(x, y);*)
+    (o, a) = sum_add_subtract_array<<4>>(x, y);
+tel
