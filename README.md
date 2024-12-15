@@ -1,2 +1,2 @@
-# Programmation_Synchrone_Heptagone/SCADE
+# Programmation_Synchrone_Heptagon/SCADE
 Code-fonction-Heptagon-langageC
